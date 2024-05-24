@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 
 namespace Diplom.Data
 {
@@ -10,5 +11,9 @@ namespace Diplom.Data
         {
 
         }
+
+     
+
+        public DbSet<App> Apps { get; set; }
     }
 }

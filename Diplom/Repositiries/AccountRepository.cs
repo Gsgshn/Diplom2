@@ -2,6 +2,7 @@
 using Diplom.Data;
 using Diplom.DTO;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -14,6 +15,9 @@ namespace Diplom.Repositiries
         RoleManager<IdentityRole> roleManager, 
         IConfiguration config) : IUser
     {
+
+      
+
         public async Task<GeneralResponse> CreateAccount(UserDTO userDTO)
         {
             if (userDTO is null) return new GeneralResponse(false, "Model is empty");
@@ -66,7 +70,7 @@ namespace Diplom.Repositiries
                 return new LoginResponse(false, null!, "Invalid email/password");
 
             var getUserRole = await userManager.GetRolesAsync(getUser);
-            var userSessions = new UserSession(getUser.Id, getUser.Name, getUser.Email, getUserRole.First());
+            var userSessions = new UserSession(getUser.Id, getUser.Name, getUser.Email, getUserRole.First(), "App1");
             string token = GenerateToken(userSessions);
             return new LoginResponse(true, token, "Login completed");
         }
@@ -80,7 +84,8 @@ namespace Diplom.Repositiries
                 new Claim(ClaimTypes.NameIdentifier, userSession.Id),
                 new Claim(ClaimTypes.Name, userSession.Name),
                 new Claim(ClaimTypes.Email, userSession.Email),
-                new Claim(ClaimTypes.Role, userSession.Role)
+                new Claim(ClaimTypes.Role, userSession.Role),
+                new Claim("App",userSession.App)
             };
             var token = new JwtSecurityToken(
                 issuer: config["Jwt:Issuer"],
@@ -91,5 +96,12 @@ namespace Diplom.Repositiries
                 );
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
+        //public async Task CreateUser()
+        //{
+
+        //}
+
+        
     }
 }
