@@ -3,6 +3,7 @@ using Diplom.Data;
 using Diplom.DTO;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -12,21 +13,25 @@ using static Diplom.DTO.ServiceResponses;
 namespace Diplom.Repositiries
 {
     public class AccountRepository(UserManager<User> userManager, 
-        RoleManager<IdentityRole> roleManager, 
-        IConfiguration config) : IUser
+        RoleManager<IdentityRole<Guid>> roleManager, 
+        IConfiguration config, ApplicationDbContext _context) : IUser
     {
 
-      
+        
+
 
         public async Task<GeneralResponse> CreateAccount(UserDTO userDTO)
         {
             if (userDTO is null) return new GeneralResponse(false, "Model is empty");
             var newUser = new User()
             {
+                Id = Guid.NewGuid(),
                 Name = userDTO.Name,
                 Email = userDTO.EmailAddress,
                 PasswordHash = userDTO.Password,
-                UserName = userDTO.EmailAddress
+                UserName = userDTO.EmailAddress,
+                
+                
             }; 
             var user = await userManager.FindByEmailAsync(newUser.Email);
             if (user is not null) return new ServiceResponses.GeneralResponse(false, "User registered alredy");
@@ -38,9 +43,9 @@ namespace Diplom.Repositiries
             var checkAdmin = await roleManager.FindByNameAsync("Admin");
             if(checkAdmin is null)
             {
-                await roleManager.CreateAsync(new IdentityRole() { Name = "Admin" });
+                await roleManager.CreateAsync(new IdentityRole<Guid>() { Name = "Admin" });
                 await userManager.AddToRoleAsync(newUser, "Admin");
-                return new GeneralResponse(true, "Afmin Account Created");
+                return new GeneralResponse(true, "Admin Account Created");
 
             }
             else
@@ -48,12 +53,17 @@ namespace Diplom.Repositiries
                 var checkUser = await roleManager.FindByNameAsync("User");
                 if (checkUser is null)
                 {
-                    await roleManager.CreateAsync(new IdentityRole() { Name = "User" });
+                    await roleManager.CreateAsync(new IdentityRole<Guid>() { Name = "User" });
                 }
                 await userManager.AddToRoleAsync(newUser, "User");
                 return new GeneralResponse(true, "Account Created");
                 
             }
+        }
+
+        public async Task<App?> FindApp(string appName)
+        {
+            return await _context.Apps.Where(c => c.Name == appName).FirstOrDefaultAsync();
         }
 
         public async Task<LoginResponse> LoginAccount(LoginDTO loginDTO)
@@ -81,7 +91,7 @@ namespace Diplom.Repositiries
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
             var userClaims = new[]
             {
-                new Claim(ClaimTypes.NameIdentifier, userSession.Id),
+                new Claim(ClaimTypes.NameIdentifier, userSession.Id.ToString()),
                 new Claim(ClaimTypes.Name, userSession.Name),
                 new Claim(ClaimTypes.Email, userSession.Email),
                 new Claim(ClaimTypes.Role, userSession.Role),
@@ -97,10 +107,7 @@ namespace Diplom.Repositiries
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        //public async Task CreateUser()
-        //{
-
-        //}
+        
 
         
     }

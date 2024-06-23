@@ -19,6 +19,6 @@ namespace Diplom.DTO
         [DataType(DataType.Password)]
         [Compare(nameof(Password))]
         public string ConfirmPassword { get; set; } = string.Empty;
-        public List<App> Apps { get; set; } = [];
+        public string? App { get; set; } 
     }
 }

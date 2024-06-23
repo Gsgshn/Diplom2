@@ -25,10 +25,10 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 });
 
 //Identity
-builder.Services.AddIdentity<User, IdentityRole>()
+builder.Services.AddIdentity<User, IdentityRole<Guid>>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddSignInManager()
-    .AddRoles<IdentityRole>();
+    .AddRoles<IdentityRole<Guid>>();
 
 
 //JWT
@@ -68,6 +68,7 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 builder.Services.AddScoped<IUser,AccountRepository>();
+builder.Services.AddScoped<IApp,AppRepositories>();
 
 var app = builder.Build();
 

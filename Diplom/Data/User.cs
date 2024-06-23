@@ -2,9 +2,11 @@
 
 namespace Diplom.Data
 {
-    public class User : IdentityUser
+    public class User : IdentityUser<Guid>
     {
+        
         public string Name { get; set; }
-        public List<App> Apps { get; set; } = [];
+        public Guid? AppId { get; set; }
+        public App? App { get; set; } 
     }
 }

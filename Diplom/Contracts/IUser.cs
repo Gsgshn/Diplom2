@@ -1,4 +1,5 @@
-﻿using Diplom.DTO;
+﻿using Diplom.Data;
+using Diplom.DTO;
 using static Diplom.DTO.ServiceResponses;
 
 namespace Diplom.Contracts
@@ -7,5 +8,6 @@ namespace Diplom.Contracts
     {
         Task<GeneralResponse> CreateAccount(UserDTO userDTO);
         Task<LoginResponse> LoginAccount(LoginDTO loginDTO);
+        Task<App?> FindApp(string appName);
     }
 }

@@ -5,6 +5,7 @@ using Diplom.DTO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using static Diplom.DTO.ServiceResponses;
 
 namespace Diplom.Controllers
@@ -12,7 +13,7 @@ namespace Diplom.Controllers
     [Route("api/[controller]")]
     [ApiController]
     public class AccountController(UserManager<User> userManager,
-        RoleManager<IdentityRole> roleManager, IUser user) : ControllerBase
+        RoleManager<IdentityRole<Guid>> roleManager, IUser user) : ControllerBase
     {
 
         private readonly ApplicationDbContext _context;
@@ -36,14 +37,16 @@ namespace Diplom.Controllers
         public async Task<IActionResult> UpdateAccount( UserUpdateDTO userUpdateDTO)
         {
             if (userUpdateDTO== null) return Content("GG email is empty") ;
-            var user = await userManager.FindByEmailAsync(userUpdateDTO.EmailAddress);
+            var user1 = await userManager.FindByEmailAsync(userUpdateDTO.EmailAddress);
 
-            if(userUpdateDTO.Name != null) user.Name = userUpdateDTO.Name;
-            if (userUpdateDTO.Password != null)  await userManager.ChangePasswordAsync(user, userUpdateDTO.Password, userUpdateDTO.Password);
+            var app = await user.FindApp(userUpdateDTO.App);
+
+            if(userUpdateDTO.Name != null) user1.Name = userUpdateDTO.Name;
+            if (userUpdateDTO.Password != null)  await userManager.ChangePasswordAsync(user1, userUpdateDTO.Password, userUpdateDTO.Password);
+            if (app != null) user1.AppId = app.Id;
             
             
-            
-            await userManager.UpdateAsync(user);
+            await userManager.UpdateAsync(user1);
 
             return Ok(user);
 
@@ -55,6 +58,8 @@ namespace Diplom.Controllers
         {
             if (userUpdateDTO == null) return Content("GG email is empty");
             var user = await userManager.FindByEmailAsync(userUpdateDTO.EmailAddress);
+
+            
 
             await userManager.DeleteAsync(user);
             return Ok();
