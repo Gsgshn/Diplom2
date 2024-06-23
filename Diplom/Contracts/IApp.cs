@@ -7,6 +7,7 @@ namespace Diplom.Contracts
     {
         Task AddApp(AppDTO appDTO); 
         Task DeleteApp(AppDTO appDTO);
-        Task UpdateApp(AppUpdateDTO appDTO , Guid Id);
+        Task UpdateApp(AppUpdateDTO appDTO);
+        Task AddUserToApp(AppUpdateDTO appDTO, Guid Id);
     }
 }

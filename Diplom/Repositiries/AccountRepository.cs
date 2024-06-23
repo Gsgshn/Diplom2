@@ -16,9 +16,13 @@ namespace Diplom.Repositiries
         RoleManager<IdentityRole<Guid>> roleManager, 
         IConfiguration config, ApplicationDbContext _context) : IUser
     {
-
-        
-
+        public async Task AddAppToUser(UserUpdateDTO userDTO, Guid Id)
+        {
+            var user = await userManager.FindByEmailAsync(userDTO.EmailAddress);
+            var userApp = new UserApp { AppId = Id, UserId = user.Id };
+            await _context.UserApps.AddAsync(userApp);
+            await _context.SaveChangesAsync();
+        }
 
         public async Task<GeneralResponse> CreateAccount(UserDTO userDTO)
         {
@@ -64,6 +68,16 @@ namespace Diplom.Repositiries
         public async Task<App?> FindApp(string appName)
         {
             return await _context.Apps.Where(c => c.Name == appName).FirstOrDefaultAsync();
+        }
+
+        public async Task<List<User>> GetAllAccount()
+        {
+            return await _context.Users.ToListAsync();
+        }
+
+        public async Task<User> GetUser(Guid Id)
+        {
+            return await _context.Users.Where(c => c.Id == Id).FirstOrDefaultAsync();
         }
 
         public async Task<LoginResponse> LoginAccount(LoginDTO loginDTO)

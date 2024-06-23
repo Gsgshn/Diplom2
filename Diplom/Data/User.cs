@@ -6,7 +6,7 @@ namespace Diplom.Data
     {
         
         public string Name { get; set; }
-        public Guid? AppId { get; set; }
-        public App? App { get; set; } 
+
+        public List<UserApp>? UserApp { get; set; }
     }
 }

@@ -21,7 +21,7 @@ namespace Diplom.Controllers
             if (appDTO == null) return new GeneralResponse(false, "Model is empty");
 
             
-            app.AddApp (appDTO);
+            await app.AddApp (appDTO);
            
                
             
@@ -38,13 +38,22 @@ namespace Diplom.Controllers
             return new GeneralResponse(true, "App deleted");
         }
 
-        [HttpPost ("UpdateApp")]
+        [HttpPost("UpdateApp")]
         public async Task<GeneralResponse> UpdateApp(AppUpdateDTO appDTO)
         {
-            var user = await userManager.FindByEmailAsync(appDTO.EmailUser);
+            
             if (appDTO == null) return new GeneralResponse(false, "Model is empty");
-            app.UpdateApp (appDTO,user.Id);
+            await app.UpdateApp(appDTO);
             return new GeneralResponse(true, "App updated");
+        }
+
+        [HttpPost("AddUserToApp")]
+        public async Task<GeneralResponse> AddUserToApp(AppUpdateDTO appUpdateDTO)
+        {
+           var user = await userManager.FindByEmailAsync (appUpdateDTO.EmailUser);
+            await app.AddUserToApp(appUpdateDTO,user.Id);
+            return new GeneralResponse(true, "User append");
+
         }
 
         //[HttpGet("GetAllApps")]
