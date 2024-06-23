@@ -23,11 +23,19 @@ namespace Diplom.Data
         {
             base.OnModelCreating(builder);
 
-            builder.Entity<UserApp>(e => e.HasKey(c => new { c.UserId, c.AppId }));
+            builder.Entity<App>()
+            .HasOne(a => a.Users)
+            .WithOne(a => a.App)
+            .HasForeignKey<User>(c => c.Id);
+
+
+            builder.Entity<User>()
+            .HasOne(a => a.App)
+            .WithOne(a => a.Users)
+            .HasForeignKey<App>(c => c.Id);
         }
 
 
         public DbSet<App> Apps { get; set; }
-        public DbSet<UserApp> UserApps { get; set; }
     }
 }

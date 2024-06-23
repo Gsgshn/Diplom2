@@ -6,7 +6,7 @@ namespace Diplom.DTO
     {
         public string Name { get; set; } = string.Empty;
         public string? NewName {  get; set; } = string.Empty ;
-        public string? EmailUser{ get; set; }
+        public string EmailUser{ get; set; }
 
     }
 }

@@ -28,11 +28,8 @@ namespace Diplom.Repositiries
 
             
              await _context.Apps.AddAsync(app);
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (Exception ex) { }
+            
+             await _context.SaveChangesAsync(); 
            
            
         }
@@ -43,31 +40,19 @@ namespace Diplom.Repositiries
 
         }
 
-        public async Task UpdateApp(AppUpdateDTO appDTO)
+        public async Task UpdateApp(AppUpdateDTO appDTO, Guid Id)
         {
 
             if (string.IsNullOrWhiteSpace(appDTO.NewName)) { appDTO.NewName = appDTO.Name; }
 
-            var app = await _context.Apps.Where(c => c.Name == appDTO.Name).FirstOrDefaultAsync();
-             
-            if(appDTO.NewName != null) app.Name = appDTO.NewName;
-            
-             await _context.SaveChangesAsync();
-            
+
+            await _context.Apps
+                .Where(c => c.Name == appDTO.Name)
+                .ExecuteUpdateAsync(s => s
+                .SetProperty(c => c.Name, appDTO.NewName)
+                .SetProperty(c => c.UserId, Id));
         }
 
         
-
-        public async Task AddUserToApp(AppUpdateDTO appDTO, Guid Id)
-        {
-            var app = await _context.Apps.Where(c => c.Name == appDTO.Name).FirstOrDefaultAsync();
-            var userApp =  new UserApp { AppId = app.Id, UserId = Id };
-            await _context.UserApps.AddAsync(userApp);
-            await _context.SaveChangesAsync();
-        }
-
-        
-
-
     }
 }

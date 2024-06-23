@@ -25,16 +25,18 @@ namespace Diplom.Migrations
             modelBuilder.Entity("Diplom.Data.App", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
-                    b.ToTable("Apps");
+                    b.ToTable("Apps", (string)null);
                 });
 
             modelBuilder.Entity("Diplom.Data.User", b =>
@@ -45,6 +47,9 @@ namespace Diplom.Migrations
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
+
+                    b.Property<Guid?>("AppId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -105,21 +110,6 @@ namespace Diplom.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
-                });
-
-            modelBuilder.Entity("Diplom.Data.UserApp", b =>
-                {
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("AppId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("UserId", "AppId");
-
-                    b.HasIndex("AppId");
-
-                    b.ToTable("UserApps");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", b =>
@@ -253,23 +243,15 @@ namespace Diplom.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Diplom.Data.UserApp", b =>
+            modelBuilder.Entity("Diplom.Data.App", b =>
                 {
-                    b.HasOne("Diplom.Data.App", "App")
-                        .WithMany("UserApp")
-                        .HasForeignKey("AppId")
+                    b.HasOne("Diplom.Data.User", "Users")
+                        .WithOne("App")
+                        .HasForeignKey("Diplom.Data.App", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Diplom.Data.User", "User")
-                        .WithMany("UserApp")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("App");
-
-                    b.Navigation("User");
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -323,14 +305,9 @@ namespace Diplom.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Diplom.Data.App", b =>
-                {
-                    b.Navigation("UserApp");
-                });
-
             modelBuilder.Entity("Diplom.Data.User", b =>
                 {
-                    b.Navigation("UserApp");
+                    b.Navigation("App");
                 });
 #pragma warning restore 612, 618
         }

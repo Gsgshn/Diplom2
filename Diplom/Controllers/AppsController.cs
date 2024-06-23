@@ -21,7 +21,7 @@ namespace Diplom.Controllers
             if (appDTO == null) return new GeneralResponse(false, "Model is empty");
 
             
-            await app.AddApp (appDTO);
+            app.AddApp (appDTO);
            
                
             
@@ -38,15 +38,16 @@ namespace Diplom.Controllers
             return new GeneralResponse(true, "App deleted");
         }
 
-        [HttpPost("UpdateApp")]
+        [HttpPost ("UpdateApp")]
         public async Task<GeneralResponse> UpdateApp(AppUpdateDTO appDTO)
         {
-            
+            var user = await userManager.FindByEmailAsync(appDTO.EmailUser);
             if (appDTO == null) return new GeneralResponse(false, "Model is empty");
-            await app.UpdateApp(appDTO);
+            app.UpdateApp (appDTO,user.Id);
             return new GeneralResponse(true, "App updated");
         }
 
+<<<<<<< HEAD
         [HttpPost("AddUserToApp")]
         public async Task<GeneralResponse> AddUserToApp(AppUpdateDTO appUpdateDTO)
         {
@@ -56,10 +57,17 @@ namespace Diplom.Controllers
 
         }
 
+        [HttpGet("GetAllApps")]
+        public async Task<List<App>> GetAllApps()
+        {
+            return context.Apps.ToList();
+        }
+=======
         //[HttpGet("GetAllApps")]
         //public async Task<List<App>> GetAllApps()
         //{
         //   return  context.Apps.ToList();
         //}
+>>>>>>> parent of 361522d (ggwp)
     }
 }
